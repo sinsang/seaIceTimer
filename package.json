@@ -1,0 +1,19 @@
+{
+  "name": "seaicetimer",
+  "version": "1.0.0",
+  "description": "제 5회 정부혁신제안 끝장개발대회 개발공익 - 해빙시계 ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinsang/seaIceTimer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sinsang/seaIceTimer/issues"
+  },
+  "homepage": "https://github.com/sinsang/seaIceTimer#readme"
+}
