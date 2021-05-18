@@ -4,7 +4,7 @@
   "description": "제 5회 정부혁신제안 끝장개발대회 개발공익 - 해빙시계 ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start" : "node index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sinsang/seaIceTimer/issues"
   },
-  "homepage": "https://github.com/sinsang/seaIceTimer#readme"
+  "homepage": "https://github.com/sinsang/seaIceTimer#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
