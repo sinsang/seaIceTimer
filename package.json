@@ -4,7 +4,7 @@
   "description": "제 5회 정부혁신제안 끝장개발대회 개발공익 - 해빙시계 ",
   "main": "index.js",
   "scripts": {
-    "start" : "node index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,14 @@
   },
   "homepage": "https://github.com/sinsang/seaIceTimer#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.9",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "fetch": "^1.1.0",
+    "node-fetch": "^2.6.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "xml2js": "^0.4.23"
   }
 }

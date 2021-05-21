@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>해빙시계</title>
+        <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
+        <link href="/css/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="areaWrap">
+            <div class="area">
+                <div class="seaIce">
+                    <img src="image/2.png">
+                </div>
+                <div class="ocean"></div>
+                <div class="sentence timer">
+                </div>
+            </div>
+            <div class="area">
+                <div class="koreaMap">
+                    <img src="image/koreaMap.png">
+                </div>
+                <div class="sea"></div>
+                <div class="koreaMap masking">
+                    <img src="image/koreaMapMasking.png">
+                </div>
+            </div>
+            <div class="area">
+                AREA3
+            </div>
+            <div class="area">
+                AREA4
+            </div>
+        </div>
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(window).ready(()=>{
+
+            var size = (50 * <%= rate %>) / 100; // 빙하 줄어들 사이즈
+            var nowXPos = 0; // 현재 사이트의 스크롤 위치
+            var w = $(window).width(); // 화면 width
+
+            // 물 차오르기
+            $(".ocean").css("margin-top", $("body").height());
+            $(".ocean").css("transform", "scaleY(" + $("body").height() * size * 2 + ")");
+            $(".ocean").css("transition-duration", "5s"); 
+
+            //$(".timer").css("display", "none");
+            // 물이 다 차오르고 문구 생성
+            var y = 999;
+            var m = 999;
+            var d = 999;
+
+            var interval = setInterval(() => {
+                if (y != <%= leftYear %>) y -= 1;
+                if (m != <%= leftMonth %>) m -= 1;
+                if (d != <%= leftDate %>) d -= 1;
+                $(".timer").html(y + "년 " + m + "개월 " + d + "일 남았습니다.");
+                if (y == <%= leftYear %> && m == <%= leftMonth %> && d == <%= leftDate %>){
+                    clearInterval(interval);
+                }
+            }, 1);
+
+            // 빙하 녹이면서 움직여주기
+            $(".seaIce").css("transform", "translateY(-" + $("body").height() * (size/2) + "px) scale( " + (1-size) + " )");
+            $(".seaIce").css("transition-duration", "5s");
+
+            // 지도 위치 조정
+            $(".koreaMap").css("margin-top", $(window).height() / 10 + "px");
+            
+            $(window).bind("wheel", _.throttle((e)=>{
+                var dir = e.originalEvent.wheelDelta;
+            
+                if (dir < -5) {
+                    nowXPos -= w;
+                    if (nowXPos <= 0) nowXPos = 0;
+                    if (nowXPos == w) {
+                        $(".sea").css("opacity", 0.6);
+                    }
+                }
+                else if (dir > 5) {
+                    nowXPos += w;
+                    if (nowXPos >= w*3) nowXPos = w*3;
+                    if (nowXPos == w) {
+                        $(".sea").css("opacity", 0.6);
+                    }
+                }
+                
+                window.scrollTo({top:0, left:nowXPos, behavior:"smooth"});
+            }, 700));
+
+        });
+
+        // 첫 위치 지정
+        window.scrollTo(0, 0);
+
+    </script>
+</html>
