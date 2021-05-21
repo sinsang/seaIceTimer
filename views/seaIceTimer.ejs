@@ -7,19 +7,20 @@
     </head>
     <body>
         <div class="areaWrap">
+
             <div class="area">
                 <div class="seaIce">
                     <img src="image/2.png">
                 </div>
                 <div class="ocean"></div>
                 <div class="sentence timer"></div>
-                <div class="sentence danger"></div>
             </div>
             <div class="guide area">
                 <div class="sentence">
                     그래서요?<br/><br/>스크롤하여 계속보기<br/>>>>>
                 </div>
             </div>
+
             <div class="area">
                 <div class="koreaMap">
                     <img src="image/koreaMap.png">
@@ -28,25 +29,54 @@
                 <div class="koreaMap masking">
                     <img src="image/koreaMapMasking.png">
                 </div>
+                <div class="sentence korea"><%- dangerComment2 %></div>
+                <div class="mapCopy">참고자료=해수면상승시뮬레이션</div>
             </div>
-            <div class="area">
-                AREA3
+            <div class="guide2 area">
+                <div class="sentence">
+                    어떻게 해야 막을 수 있나요?<br/><br/>스크롤하여 계속보기<br/>>>>>
+                </div>
             </div>
-            <div class="area">
-                AREA4
+
+            <div class="area" style="background-color: rgb(181, 214, 146);">
+                <div class="title">탄소중립<br/>지금도 늦지 않았습니다.</div>
+                <div class="items">
+                    <a href="https://cpoint.or.kr/"><img src="image/logo_cpoint_pc.png"></a>
+                </div>
+                <div class="footTitle">탄소중립에 여러분의 실천을 보태주세요.</div>
+            </div>
+
+            <div class="area" style="background-color: rgb(181, 214, 146);">
+                <div class="title">제작자</div>
+                <div class="maker">
+                    신상우<br/>
+                    sw980321@naver.com<br/>
+                    <div style="font-size: 0.7em;">제 5회 정부혁신제안 끝장개발대회 Team 개발공익</div>
+                </div>
             </div>
         </div>
     </body>
     <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        var size = (50 * <%= rate %>) / 100; // 빙하 줄어들 사이즈
+        var nowXPos = 0; // 현재 사이트의 스크롤 위치
+        var w = $(window).width(); // 화면 width
+
+        var nowScroll = false;
+
+        const seaVisible = () => {
+            $(".sea").css("opacity", 0.8);
+            $(".korea").css("opacity", 1);
+            setTimeout(() => {
+                $(".guide2").css("opacity", 1);
+                setTimeout(() => {
+                    $(".guide2").css("opacity", 0);    
+                }, 1500);
+            }, 5000)
+        }
+
         $(window).ready(()=>{
-
-            var size = (50 * <%= rate %>) / 100; // 빙하 줄어들 사이즈
-            var nowXPos = 0; // 현재 사이트의 스크롤 위치
-            var w = $(window).width(); // 화면 width
-
-            var nowScroll = false;
 
             // 물 차오르기
             //$(".ocean").css("margin-top", $("body").height());
@@ -55,21 +85,21 @@
 
             //$(".timer").css("display", "none");
             // 물이 다 차오르고 문구 생성
-            var y = 999;
-            var m = 999;
-            var d = 999;
+            var y = 444;
+            var m = 99;
+            var d = 99;
 
             var interval = setInterval(() => {
                 if (y != <%= leftYear %>) y -= 1;
                 if (m != <%= leftMonth %>) m -= 1;
                 if (d != <%= leftDate %>) d -= 1;
-                $(".timer").html("해빙 소멸까지<br/>" + y + "년 " + m + "개월 " + d + "일 남았습니다.");
+                $(".timer").html("해빙 소멸까지<br/>" + y + "년 " + m + "개월 " + d + "일 남았습니다.<br/><br/><%= dangerComment1 %>");
                 if (y == <%= leftYear %> && m == <%= leftMonth %> && d == <%= leftDate %>){
                     clearInterval(interval);
                     $(".guide").css("opacity", 1);
                     setTimeout(() => {
                         $(".guide").css("opacity", 0);    
-                    }, 1000);
+                    }, 1500);
                 }
             }, 1);
 
@@ -82,10 +112,6 @@
             // 지도 위치 조정
             $(".koreaMap").css("margin-top", $(window).height() / 10 + "px");
             
-            $(window).bind("drag", (e)=>{
-                console.log(e);
-            });
-            
             $(window).bind("wheel", _.throttle((e)=>{
                 var moveX = e.originalEvent.deltaX;
                 var moveY = e.originalEvent.deltaY;
@@ -94,14 +120,14 @@
                     nowXPos -= w;
                     if (nowXPos <= 0) nowXPos = 0;
                     if (nowXPos == w) {
-                        $(".sea").css("opacity", 0.6);
+                        seaVisible();
                     }
                 }
                 else if (!nowScroll && (moveX > 5 || moveY < -5)) {
                     nowXPos += w;
                     if (nowXPos >= w*3) nowXPos = w*3;
                     if (nowXPos == w) {
-                        $(".sea").css("opacity", 0.6);
+                        seaVisible();
                     }
                 }
                 
@@ -114,5 +140,43 @@
 
         });
 
+        window.addEventListener('touchstart', (event) => {
+            var touch = event.touches[0];
+            touchstartX = touch.clientX;
+            touchstartY = touch.clientY;
+        }, false);
+        
+        window.addEventListener('touchend', (event) => {
+            if(event.touches.length == 0) {
+                var touch = event.changedTouches[event.changedTouches.length - 1];
+                touchendX = touch.clientX;
+                touchendY = touch.clientY;
+        
+                touchoffsetX = touchendX - touchstartX;
+                touchoffsetY = touchendY - touchstartY;
+        
+                if (Math.abs(touchoffsetX) >= 30 && Math.abs(touchoffsetY) <= 50) {
+                    if (touchoffsetX < 0){
+                        nowXPos += w;
+                        if (nowXPos >= w*3) nowXPos = w*3;
+                        if (nowXPos == w) {
+                            seaVisible();
+                        }
+                    }
+                    else {
+                        nowXPos -= w;
+                        if (nowXPos <= 0) nowXPos = 0;
+                        if (nowXPos == w) {
+                            $(".sea").css("opacity", 0.8);
+                        }
+                    }
+                    if (!nowScroll){
+                        window.scrollTo({top:0, left:nowXPos, behavior:"smooth"});
+                        nowScroll = true;
+                        setTimeout(()=>{nowScroll = false;}, 100);
+                    } 
+                }
+            }
+        }, false);
     </script>
 </html>
