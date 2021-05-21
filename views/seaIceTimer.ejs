@@ -12,7 +12,12 @@
                     <img src="image/2.png">
                 </div>
                 <div class="ocean"></div>
-                <div class="sentence timer">
+                <div class="sentence timer"></div>
+                <div class="sentence danger"></div>
+            </div>
+            <div class="guide area">
+                <div class="sentence">
+                    그래서요?<br/><br/>스크롤하여 계속보기<br/>>>>>
                 </div>
             </div>
             <div class="area">
@@ -41,8 +46,10 @@
             var nowXPos = 0; // 현재 사이트의 스크롤 위치
             var w = $(window).width(); // 화면 width
 
+            var nowScroll = false;
+
             // 물 차오르기
-            $(".ocean").css("margin-top", $("body").height());
+            //$(".ocean").css("margin-top", $("body").height());
             $(".ocean").css("transform", "scaleY(" + $("body").height() * size * 2 + ")");
             $(".ocean").css("transition-duration", "5s"); 
 
@@ -56,11 +63,17 @@
                 if (y != <%= leftYear %>) y -= 1;
                 if (m != <%= leftMonth %>) m -= 1;
                 if (d != <%= leftDate %>) d -= 1;
-                $(".timer").html(y + "년 " + m + "개월 " + d + "일 남았습니다.");
+                $(".timer").html("해빙 소멸까지<br/>" + y + "년 " + m + "개월 " + d + "일 남았습니다.");
                 if (y == <%= leftYear %> && m == <%= leftMonth %> && d == <%= leftDate %>){
                     clearInterval(interval);
+                    $(".guide").css("opacity", 1);
+                    setTimeout(() => {
+                        $(".guide").css("opacity", 0);    
+                    }, 1000);
                 }
             }, 1);
+
+            window.scrollTo(0, 0);
 
             // 빙하 녹이면서 움직여주기
             $(".seaIce").css("transform", "translateY(-" + $("body").height() * (size/2) + "px) scale( " + (1-size) + " )");
@@ -69,17 +82,22 @@
             // 지도 위치 조정
             $(".koreaMap").css("margin-top", $(window).height() / 10 + "px");
             
-            $(window).bind("wheel", _.throttle((e)=>{
-                var dir = e.originalEvent.wheelDelta;
+            $(window).bind("drag", (e)=>{
+                console.log(e);
+            });
             
-                if (dir < -5) {
+            $(window).bind("wheel", _.throttle((e)=>{
+                var moveX = e.originalEvent.deltaX;
+                var moveY = e.originalEvent.deltaY;
+
+                if (!nowScroll && (moveX < -5 || moveY > 5)) {
                     nowXPos -= w;
                     if (nowXPos <= 0) nowXPos = 0;
                     if (nowXPos == w) {
                         $(".sea").css("opacity", 0.6);
                     }
                 }
-                else if (dir > 5) {
+                else if (!nowScroll && (moveX > 5 || moveY < -5)) {
                     nowXPos += w;
                     if (nowXPos >= w*3) nowXPos = w*3;
                     if (nowXPos == w) {
@@ -87,13 +105,14 @@
                     }
                 }
                 
-                window.scrollTo({top:0, left:nowXPos, behavior:"smooth"});
-            }, 700));
+                if (!nowScroll){
+                    window.scrollTo({top:0, left:nowXPos, behavior:"smooth"});
+                    nowScroll = true;
+                    setTimeout(()=>{nowScroll = false;}, 500);
+                }
+            }, 1));
 
         });
-
-        // 첫 위치 지정
-        window.scrollTo(0, 0);
 
     </script>
 </html>

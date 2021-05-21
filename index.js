@@ -2,7 +2,7 @@ const axios = require("axios");
 const express = require("express");
 const key = require("./key");
 const app = express();
-//var port = normalizePort(process.env.PORT || '3000');
+var port = (process.env.PORT || '3000');
 
 var nowTotal = 0;
 var leftTime = 0;
@@ -92,6 +92,6 @@ app.get("/renewData/:pw", (req, res) => {
     }
 });
 
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log("돌아가는중")
 });
