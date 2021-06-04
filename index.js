@@ -48,17 +48,19 @@ var dangerComment2 = [
     "이 지도가 우리 자손에게 생길 일이라 생각하지 마세요.<br/>우리에게도 다가오고 있습니다.",
 ];
 
+let today = new Date();
+let t_year = today.getFullYear();
+let t_month = today.getMonth();
+
 var apiURL = (year, month) => {
     var startDate = "" + year + month;
     var endDate = "" + year + month;
     return "https://www.kdhc.co.kr:443/openapi-data/service/kdhcCarbon/carbon?startDate=" + startDate + "&endDate=" + endDate + "&pageNo=1&numOfRows=300&serviceKey=";
 }
 
-var getNewData = () => {
+var getNewData = (y, m) => {
 
-    let today = new Date();
-    let y = today.getFullYear();
-    let m = today.getMonth();
+    nowState = false;
 
     if (m == 0){
         y -= 1;
@@ -80,27 +82,35 @@ var getNewData = () => {
         console.log("총 배출량 : " + total);
         console.log("총 item 개수 : " + items.length);
 
-        total = total * (19/items.length);
-        total *= 12;
-        total *= (100/0.7);
-        total *= 50;
-        
-        rate = total / 35000000000;
+        if (total == 0) {
+            console.log("재탐색합니다")
+            getNewData(y, m-1);
+        }
+        else {
+            console.log("서버 설정 완료");
 
-        console.log(total);
-        console.log(rate);
+            total = total * (19/items.length);
+            total *= 12;
+            total *= (100/0.7);
+            total *= 50;
+            
+            rate = total / 35000000000;
 
-        tmp = new Date("2050-12-31");
-        leftTime = tmp.getTime() - today.getTime();
-        leftTime -= (leftTime * (rate-1));
-        leftTime = new Date(leftTime);
+            console.log(total);
+            console.log(rate);
 
-        nowState = true;
-        nowTotal = total;
+            tmp = new Date("2050-12-31");
+            leftTime = tmp.getTime() - today.getTime();
+            leftTime -= (leftTime * (rate-1));
+            leftTime = new Date(leftTime);
+
+            nowState = true;
+            nowTotal = total;
+        }
     });
 }
 
-getNewData();
+getNewData(t_year, t_month);
 
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
@@ -123,14 +133,13 @@ app.get("/", (req, res) => {
         });
     }
     else {
-        res.send("서버 로딩 중입니다.");
+        res.send("서버 로딩 중입니다. 잠시 후 새로고침 해주세요.");
     }
 });
 
 app.get("/renewData/:pw", (req, res) => {
     if (req.params.pw == key.adminKey){
-        nowState = false;
-        getNewData();
+        getNewData(t_year, t_month);
         res.redirect("/");
     }
     else {
